@@ -1,0 +1,12 @@
+# Arquivos de log
+*.log
+
+# Arquivos de banco de dados
+*.db
+
+# Dependências instaladas via npm
+node_modules/
+
+# Arquivos gerados durante o desenvolvimento
+*.tmp
+*.bak
