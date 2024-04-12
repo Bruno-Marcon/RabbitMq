@@ -1,12 +1,7 @@
-// db.js
-
 const sqlite3 = require('sqlite3').verbose();
-
-// Configurações do banco de dados SQLite
 const dbFile = './pedidos.db';
 const db = new sqlite3.Database(dbFile);
 
-// Criar tabela de pedidos se não existir
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS pedidos (
@@ -20,7 +15,6 @@ db.serialize(() => {
   `);
 });
 
-// Função para registrar um pedido no banco de dados
 function registrarPedido(pedido) {
   const { cliente, produto, quantidade, endereco } = pedido;
   db.run(`
@@ -33,5 +27,4 @@ function registrarPedido(pedido) {
   });
 }
 
-// Exportar a função para ser utilizada por outros módulos
 module.exports = { registrarPedido };
