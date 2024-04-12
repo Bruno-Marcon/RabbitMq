@@ -10,3 +10,7 @@ node_modules/
 # Arquivos gerados durante o desenvolvimento
 *.tmp
 *.bak
+
+# Arquivos de configuração do npm
+package.json
+package-lock.json

@@ -8,8 +8,8 @@ const rabbitmqURL = 'amqp://localhost:5672';
 // Nome da fila de envio/logística
 const filaEnvio = 'fila_envio';
 
-// Função para enviar o pedido processado para a fila de envio/logística
-async function enviarPedidoParaEnvio(pedido) {
+// Função para consumir mensagens da fila de envio/logística
+async function consumirMensagens() {
   try {
     // Conectar-se ao RabbitMQ
     const connection = await amqp.connect(rabbitmqURL);
@@ -18,17 +18,24 @@ async function enviarPedidoParaEnvio(pedido) {
     // Declarar a fila de envio/logística
     await channel.assertQueue(filaEnvio, { durable: true });
 
-    // Enviar o pedido processado para a fila de envio/logística
-    channel.sendToQueue(filaEnvio, Buffer.from(JSON.stringify(pedido)), { persistent: true });
-    console.log('Pedido enviado para envio/logística:', pedido);
+    // Consumir mensagens da fila de envio/logística
+    console.log('Aguardando mensagens da fila de envio/logística...');
+    channel.consume(filaEnvio, (mensagem) => {
+      if (mensagem !== null) {
+        // Processar mensagem da fila de envio/logística
+        const pedido = JSON.parse(mensagem.content.toString());
+        console.log('Pedido recebido da fila de envio/logística:', pedido);
+        
+        // Aqui você pode adicionar a lógica para processar o pedido recebido
 
-    // Fechar a conexão com o RabbitMQ
-    await channel.close();
-    await connection.close();
+        // Confirmar o processamento da mensagem
+        channel.ack(mensagem);
+      }
+    });
   } catch (error) {
-    console.error('Erro ao enviar pedido para envio/logística:', error);
+    console.error('Erro ao consumir mensagens da fila de envio/logística:', error);
   }
 }
 
-// Exportar a função para ser utilizada por outros módulos
-module.exports = enviarPedidoParaEnvio;
+// Iniciar a consumação de mensagens da fila de envio/logística
+consumirMensagens();
